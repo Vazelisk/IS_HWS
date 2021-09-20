@@ -11,7 +11,8 @@ nltk.download('stopwords')
 from pprint import pprint
 from tqdm import tqdm
 
-#
+
+# достаю файлы
 def get_paths():
     curr_dir = os.getcwd()
     sub_dir = os.path.join(curr_dir, 'friends-data')
