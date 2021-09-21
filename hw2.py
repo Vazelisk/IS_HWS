@@ -10,12 +10,12 @@ import re
 nltk.download('stopwords')
 from pprint import pprint
 from tqdm import tqdm
+stopword = stopwords.words('russian')
 
 
 # достаю файлы
 def get_paths():
     curr_dir = os.getcwd()
-    sub_dir = os.path.join(curr_dir, 'friends-data')
 
     paths = []
     names = []
@@ -30,21 +30,34 @@ def get_paths():
 
 # препроцессинг данных (медленный, но качественный)
 def preproc(paths):
-    mystem = Mystem()
+    m = Mystem()
     corpus = []
     for path in tqdm(paths):
         with open(path, 'r', encoding='utf-8-sig') as f:
             text = f.read()
         text = re.sub('[0-9a-zA-Z]+', '', text)
+        text = re.sub('–', '', text)
         text = [word.lower().strip().strip(punctuation) for word in text.split()]
-        text = mystem.lemmatize(' '.join([x for x in text]))
-        text = [word for word in text if word != '']
-        text = [word for word in text if word != r' ']
-        text = [word for word in text if word != r'  ']
-        text = ' '.join([x for x in text if x not in stopwords.words('russian')])
+        text = ' '.join([x for x in text if x not in stopword])
         corpus.append(text)
 
-    return corpus
+    lol = lambda lst, sz: [lst[i:i + sz] for i in range(0, len(lst), sz)]
+    txtpart = lol(corpus, 1000)
+    res = []
+    for txtp in txtpart:
+        alltexts = ' '.join([txt + ' br ' for txt in txtp])
+
+        words = m.lemmatize(alltexts)
+        doc = []
+        for txt in words:
+            if txt != '\n' and txt.strip() != '':
+                if txt == 'br':
+                    res.append(' '.join(doc))
+                    doc = []
+                else:
+                    doc.append(txt)
+
+    return res
 
 
 # функция индексации корпуса, на выходе которой посчитанная матрица Document-Term
