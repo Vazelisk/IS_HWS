@@ -28,7 +28,7 @@ st.markdown(
     """
     <style>
     .reportview-container {
-        background: url("https://raw.githubusercontent.com/Vazelisk/IS_HWS/master/saved/background.png")
+        background: url("https://raw.githubusercontent.com/Vazelisk/love_search/master/saved/background.png")
     }
     </style>
     """,
