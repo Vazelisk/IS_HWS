@@ -9,3 +9,8 @@ FastText - https://rusvectores.org/static/models/rusvectores4/fasttext/araneum_n
 Пример работы:<p>
 ![image](https://github.com/Vazelisk/IS_HWS/blob/master/example.gif)
 
+### Инструкция
+`streamlit_app.py` запускает веб-приложение. До этого необходимо единожды запустить search_engine, чтобы создать все необходимые файлы, покажет скоринг и запустит поиск в терминале.
+
+Пример выдачи скрипта:<p>
+![image](https://user-images.githubusercontent.com/42929213/137906245-d96a1542-4d2c-4fc5-a6eb-9ccbdc06b2ac.png)
