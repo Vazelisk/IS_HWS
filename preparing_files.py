@@ -230,29 +230,29 @@ def create_all():
 
     # fasttext module
     start = time()
-    print('creating fasttext matrixes')
+    print('creating fasttext matrices')
     fasttext_model = KeyedVectors.load('saved/araneum_none_fasttextcbow_300_5_2018.model')
     fasttext_ans_matrix = fasttext_get_matrix(cleared_answers_corpus, fasttext_model)
     fasttext_ques_matrix = fasttext_get_matrix(cleared_questions_corpus, fasttext_model)
     sparse.save_npz('saved/fasttext_ans_matrix.npz', fasttext_ans_matrix)
     sparse.save_npz('saved/fasttext_ques_matrix.npz', fasttext_ques_matrix)
     end = time()
-    print('created fasttext matrixes', end - start)
+    print('created fasttext matrices', end - start)
 
     # bert
     start = time()
-    print('creating bert matrixes')
+    print('creating bert matrices')
     auto_tokenizer = AutoTokenizer.from_pretrained("sberbank-ai/sbert_large_nlu_ru")
     auto_model = AutoModel.from_pretrained("sberbank-ai/sbert_large_nlu_ru")
     auto_model.to('cuda')
     torch.save(bert_vectorizer(cleared_questions_corpus, auto_model, auto_tokenizer), 'saved/ques_bert.pt')
     torch.save(bert_vectorizer(cleared_answers_corpus, auto_model, auto_tokenizer), 'saved/ans_bert.pt')
     end = time()
-    print('created bert matrixes', end - start)
+    print('created bert matrices', end - start)
 
     # BM25
     start = time()
-    print('creating bm25 matrixes')
+    print('creating bm25 matrices')
     bm25_answers, bm25_questions, bm25_count_vectorizer = bm25_vectorization(cleared_answers_corpus,
                                                                              cleared_questions_corpus)
     with open('saved/bm25_answers.npz', 'wb') as f:
@@ -262,11 +262,11 @@ def create_all():
     with open('saved/bm25_count_vectorizer.pickle', 'wb') as f:
         pickle.dump(bm25_count_vectorizer, f)
     end = time()
-    print('created bm25 matrixes', end - start)
+    print('created bm25 matrices', end - start)
 
     # TF IDF
     start = time()
-    print('creating tfidf matrixes')
+    print('creating tfidf matrices')
     tfidf_answers, tfidf_questions, tfidf_vectorizer = tfidf_vectorization(cleared_answers_corpus,
                                                                            cleared_questions_corpus)
     with open('saved/tfidf_answers.npz', 'wb') as f:
@@ -276,11 +276,11 @@ def create_all():
     with open('saved/tfidf_vectorizer.pickle', 'wb') as f:
         pickle.dump(tfidf_vectorizer, f)
     end = time()
-    print('created tfidf matrixes', end - start)
+    print('created tfidf matrices', end - start)
 
     # Count
     start = time()
-    print('creating count matrixes')
+    print('creating count matrices')
     count_answers, count_questions, count_vectorizer = count_vectorization(cleared_answers_corpus,
                                                                            cleared_questions_corpus)
     with open('saved/count_answers.npz', 'wb') as f:
@@ -290,8 +290,23 @@ def create_all():
     with open('saved/count_vectorizer.pickle', 'wb') as f:
         pickle.dump(count_vectorizer, f)
     end = time()
-    print('created count matrixes', end - start)
+    print('created count matrices', end - start)
+
+
+def scoring(q_matrix, a_matrix):
+    # q_matrix = np.delete(q_matrix., np.s_[5000:], 0)
+    # a_matrix = np.delete(a_matrix.toarray(), np.s_[5000:], 0)
+
+    scoring_matrix = np.dot(q_matrix.toarray(), a_matrix.toarray().T)
+    score = 0
+    for ind, line in enumerate(scoring_matrix):
+        sorted_scores_indx = np.argsort(line, axis=0)[::-1]
+        sorted_scores_indx = [sorted_scores_indx.ravel()][0][:5]
+        if ind in sorted_scores_indx:
+            score += 1
+
+    return score / q_matrix.shape[0]
 
 
 if __name__ == '__main__':
-    create_all()
+    pass
