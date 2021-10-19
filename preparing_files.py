@@ -15,7 +15,6 @@ import torch
 from transformers import AutoTokenizer, AutoModel
 from time import time
 
-
 m = Mystem()
 nltk.download('stopwords')
 stopword = stopwords.words('russian')
@@ -24,6 +23,7 @@ punctuation += '...' + '—' + '…' + '«»'
 
 def first_processing(file):
     with open(file, 'r', encoding='utf-8') as f:
+        # установите размер корпуса в предложениях (для 50к нужно более 10гб памяти)
         corpus = list(f)[:10000]
 
     answers_corpus = []
@@ -140,6 +140,7 @@ def cls_pooling(model_output, attention_mask):
 
 
 def bert_vectorizer(corpus, auto_model, auto_tokenizer):
+    # на 3000 файлов требуется ~7gb видеопамяти. Устанавливайте значение ниже, если памяти меньше
     corpus = [corpus[i:i + 3000] for i in range(0, len(corpus), 3000)]
     bert_vects = []
     for text in tqdm(corpus):
@@ -194,7 +195,7 @@ def bm25_vectorization(ans_cleared_corpus, que_cleared_corpus):
 
 
 def tfidf_vectorization(ans_cleared_corpus, que_cleared_corpus):
-    vectorizer = TfidfVectorizer()
+    vectorizer = TfidfVectorizer(use_idf=True, norm='l2')
     tfidf_answers = vectorizer.fit_transform(ans_cleared_corpus)
     tfidf_questions = vectorizer.transform(que_cleared_corpus)
 
@@ -208,19 +209,21 @@ def count_vectorization(ans_cleared_corpus, que_cleared_corpus):
 
     return count_answers, count_questions, vectorizer
 
+
 def create_all():
     # для создания корпусов
     start = time()
     print('creating corpuses')
-    answers_corpus, questions_corpus = first_processing('questions_about_love.jsonl')
-    answers_corpus, questions_corpus, cleared_answers_corpus, cleared_questions_corpus = get_cleared_corpus(answers_corpus, questions_corpus)
-    with open('answers_corpus.pickle', 'wb') as f:
+    answers_corpus, questions_corpus = first_processing('saved/questions_about_love.jsonl')
+    answers_corpus, questions_corpus, cleared_answers_corpus, cleared_questions_corpus = get_cleared_corpus(
+        answers_corpus, questions_corpus)
+    with open('saved/answers_corpus.pickle', 'wb') as f:
         pickle.dump(answers_corpus, f)
-    with open('questions_corpus.pickle', 'wb') as f:
+    with open('saved/questions_corpus.pickle', 'wb') as f:
         pickle.dump(questions_corpus, f)
-    with open('cleared_answers_corpus.pickle', 'wb') as f:
+    with open('saved/cleared_answers_corpus.pickle', 'wb') as f:
         pickle.dump(cleared_answers_corpus, f)
-    with open('cleared_questions_corpus.pickle', 'wb') as f:
+    with open('saved/cleared_questions_corpus.pickle', 'wb') as f:
         pickle.dump(cleared_questions_corpus, f)
     end = time()
     print('corpuses created', end - start)
@@ -228,14 +231,13 @@ def create_all():
     # fasttext module
     start = time()
     print('creating fasttext matrixes')
-    fasttext_model = KeyedVectors.load('araneum_none_fasttextcbow_300_5_2018.model')
+    fasttext_model = KeyedVectors.load('saved/araneum_none_fasttextcbow_300_5_2018.model')
     fasttext_ans_matrix = fasttext_get_matrix(cleared_answers_corpus, fasttext_model)
     fasttext_ques_matrix = fasttext_get_matrix(cleared_questions_corpus, fasttext_model)
-    sparse.save_npz('fasttext_ans_matrix.npz', fasttext_ans_matrix)
-    sparse.save_npz('fasttext_ques_matrix.npz', fasttext_ques_matrix)
+    sparse.save_npz('saved/fasttext_ans_matrix.npz', fasttext_ans_matrix)
+    sparse.save_npz('saved/fasttext_ques_matrix.npz', fasttext_ques_matrix)
     end = time()
     print('created fasttext matrixes', end - start)
-
 
     # bert
     start = time()
@@ -243,8 +245,8 @@ def create_all():
     auto_tokenizer = AutoTokenizer.from_pretrained("sberbank-ai/sbert_large_nlu_ru")
     auto_model = AutoModel.from_pretrained("sberbank-ai/sbert_large_nlu_ru")
     auto_model.to('cuda')
-    torch.save(bert_vectorizer(questions_corpus, auto_model, auto_tokenizer), 'ques_bert.pt')
-    torch.save(bert_vectorizer(answers_corpus, auto_model, auto_tokenizer), 'ans_bert.pt')
+    torch.save(bert_vectorizer(cleared_questions_corpus, auto_model, auto_tokenizer), 'saved/ques_bert.pt')
+    torch.save(bert_vectorizer(cleared_answers_corpus, auto_model, auto_tokenizer), 'saved/ans_bert.pt')
     end = time()
     print('created bert matrixes', end - start)
 
@@ -253,26 +255,25 @@ def create_all():
     print('creating bm25 matrixes')
     bm25_answers, bm25_questions, bm25_count_vectorizer = bm25_vectorization(cleared_answers_corpus,
                                                                              cleared_questions_corpus)
-    with open('bm25_answers.npz', 'wb') as f:
+    with open('saved/bm25_answers.npz', 'wb') as f:
         pickle.dump(bm25_answers, f)
-    with open('bm25_questions.npz', 'wb') as f:
+    with open('saved/bm25_questions.npz', 'wb') as f:
         pickle.dump(bm25_questions, f)
-    with open('bm25_count_vectorizer.pickle', 'wb') as f:
+    with open('saved/bm25_count_vectorizer.pickle', 'wb') as f:
         pickle.dump(bm25_count_vectorizer, f)
     end = time()
     print('created bm25 matrixes', end - start)
-
 
     # TF IDF
     start = time()
     print('creating tfidf matrixes')
     tfidf_answers, tfidf_questions, tfidf_vectorizer = tfidf_vectorization(cleared_answers_corpus,
                                                                            cleared_questions_corpus)
-    with open('tfidf_answers.npz', 'wb') as f:
+    with open('saved/tfidf_answers.npz', 'wb') as f:
         pickle.dump(tfidf_answers, f)
-    with open('tfidf_questions.npz', 'wb') as f:
+    with open('saved/tfidf_questions.npz', 'wb') as f:
         pickle.dump(tfidf_questions, f)
-    with open('tfidf_vectorizer.pickle', 'wb') as f:
+    with open('saved/tfidf_vectorizer.pickle', 'wb') as f:
         pickle.dump(tfidf_vectorizer, f)
     end = time()
     print('created tfidf matrixes', end - start)
@@ -282,11 +283,11 @@ def create_all():
     print('creating count matrixes')
     count_answers, count_questions, count_vectorizer = count_vectorization(cleared_answers_corpus,
                                                                            cleared_questions_corpus)
-    with open('count_answers.npz', 'wb') as f:
+    with open('saved/count_answers.npz', 'wb') as f:
         pickle.dump(count_answers, f)
-    with open('count_questions.npz', 'wb') as f:
+    with open('saved/count_questions.npz', 'wb') as f:
         pickle.dump(count_questions, f)
-    with open('count_vectorizer.pickle', 'wb') as f:
+    with open('saved/count_vectorizer.pickle', 'wb') as f:
         pickle.dump(count_vectorizer, f)
     end = time()
     print('created count matrixes', end - start)

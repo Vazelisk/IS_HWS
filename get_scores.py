@@ -16,5 +16,6 @@ def scoring(q_matrix, a_matrix):
 
     return score / q_matrix.shape[0]
 
+
 if __name__ == '__main__':
     pass
