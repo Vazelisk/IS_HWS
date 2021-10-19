@@ -6,5 +6,5 @@
 FastText - https://rusvectores.org/static/models/rusvectores4/fasttext/araneum_none_fasttextcbow_300_5_2018.tgz<p>
 
 Пример работы:<br>
-![image](https://github.com/Vazelisk/IS_HWS/blob/master/2021-10-19%2014-31-38.gif)
+![image](https://github.com/Vazelisk/IS_HWS/blob/master/example.gif)
 
