@@ -7,7 +7,7 @@
 FastText - https://rusvectores.org/static/models/rusvectores4/fasttext/araneum_none_fasttextcbow_300_5_2018.tgz<p>
 
 Пример работы:<p>
-![image](https://github.com/Vazelisk/IS_HWS/blob/master/saved/example.gif)
+![image](https://github.com/Vazelisk/love_search/blob/master/saved/example.gif)
 
 ### Инструкция
 `streamlit_app.py` запускает веб-приложение. До этого необходимо единожды запустить `search_engine`, чтобы создать все необходимые файлы, он также покажет скоринг и запустит поиск в терминале.
