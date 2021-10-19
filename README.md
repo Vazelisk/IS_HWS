@@ -1,4 +1,4 @@
-### Поисковик на движках Bert, FastText, BM25, TF IDF, Countvectorizer. 
+### Поисковик на движках `Bert`, `FastText`, `BM25`, `TF IDF`, `Countvectorizer`. 
 ### В качестве данных используются вопросы/ответы Mail.ru про любовь.<br><br>
 
 Для работы нужны следующие файлы:<p>
