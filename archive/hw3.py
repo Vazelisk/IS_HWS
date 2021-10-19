@@ -2,7 +2,6 @@ from pymystem3 import Mystem
 from string import punctuation
 from nltk.corpus import stopwords
 from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.metrics.pairwise import cosine_similarity
 from sklearn.feature_extraction.text import CountVectorizer
 from pprint import pprint
 import nltk
@@ -124,7 +123,7 @@ def query_preprocessing(query, count_vectorizer):
 
 
 def search(sparced_matrix, query_vec):
-    scores = cosine_similarity(sparced_matrix, query_vec)
+    scores = np.dot(sparced_matrix, query_vec.T)
     sorted_scores_indx = np.argsort(scores, axis=0)[::-1]
     return list(np.array(answers_corpus)[sorted_scores_indx.ravel()][:10])
 
