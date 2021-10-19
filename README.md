@@ -1,5 +1,5 @@
 ### Поисковик на движках Bert, FastText, BM25, TF IDF, Countvectorizer. 
-### В качестве данных используются вопросы/ответы Mail.ru про любовь.<br>
+### В качестве данных используются вопросы/ответы Mail.ru про любовь.<br><br>
 
 Для работы нужны следующие файлы:<p>
 Корпус - https://www.kaggle.com/bobazooba/thousands-of-questions-about-love<p>
