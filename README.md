@@ -1,16 +1,16 @@
-### Поисковик на движках `Bert`, `FastText`, `BM25`, `TF IDF`, `Countvectorizer`.<br>
-### В качестве данных используются вопросы/ответы Mail.ru про любовь.<br>
-### Веб-версия сделана с помощью `Streamlit`.<p>
+### Search Engine using `Bert`, `FastText`, `BM25`, `TF IDF`, `Countvectorizer`.<br>
+### As answer data I use questions/answers from Service "Crowd answer users questions" by Mail.ru about love.<br>
+### Web-version uses `Streamlit`.<p>
 
-Для работы нужны следующие файлы:<p>
-Корпус - https://www.kaggle.com/bobazooba/thousands-of-questions-about-love<p>
+You need to predownload:<p>
+Corpora - https://www.kaggle.com/bobazooba/thousands-of-questions-about-love<p>
 FastText - https://rusvectores.org/static/models/rusvectores4/fasttext/araneum_none_fasttextcbow_300_5_2018.tgz<p>
 
-Пример работы:<p>
+Usage example:<p>
 ![image](https://github.com/Vazelisk/love_search/blob/master/saved/example.gif)
 
-### Инструкция
-`streamlit_app.py` запускает веб-приложение. До этого необходимо единожды запустить `search_engine`, чтобы создать все необходимые файлы, он также покажет скоринг и запустит поиск в терминале.
-
-Пример выдачи скрипта:<p>
+### Guide
+`streamlit_app.py` launches web-service. Before it you should to run `search_engine.py` to create all needed files, it will also score engines and launch command-line search.
+  
+search_engine output example:<p>
 ![image](https://user-images.githubusercontent.com/42929213/137906245-d96a1542-4d2c-4fc5-a6eb-9ccbdc06b2ac.png)
